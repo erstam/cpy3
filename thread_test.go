@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+/* Removed in Python 3.8
 func TestThreadInitialization(t *testing.T) {
 	Py_Initialize()
 	PyEval_InitThreads()
@@ -14,6 +15,7 @@ func TestThreadInitialization(t *testing.T) {
 
 	PyEval_ReInitThreads()
 }
+*/
 
 func TestGIL(t *testing.T) {
 	Py_Initialize()
