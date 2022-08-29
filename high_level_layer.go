@@ -8,12 +8,13 @@ Copyright 2018 Datadog, Inc.
 package python3
 
 /*
-#cgo pkg-config: python3
 #include "Python.h"
 */
 import "C"
 import (
+	"errors"
 	"fmt"
+	"strings"
 	"unsafe"
 )
 
@@ -55,6 +56,46 @@ func PyRun_AnyFile(filename string) (int, error) {
 
 	// C.PyRun_AnyFile is a macro, using C.PyRun_AnyFileFlags instead
 	return int(C.PyRun_AnyFileFlags(cfile, cfilename, nil)), nil
+}
+
+//PyRun_SimpleFile : https://docs.python.org/3.9/c-api/veryhigh.html?highlight=pycompilerflags#c.PyRun_SimpleFile
+// "error" will be set if we fail to open "filename".
+func PyRun_SimpleFile(filename string) (int, error) {
+	cfilename := C.CString(filename)
+	defer C.free(unsafe.Pointer(cfilename))
+
+	mode := C.CString("rb")
+	defer C.free(unsafe.Pointer(mode))
+
+	cfile, err := C.fopen(cfilename, mode)
+	if err != nil {
+		return -1, fmt.Errorf("fail to open '%s': %v", filename, err)
+	}
+	defer C.fclose(cfile)
+
+	// For now we have an issue (seg fault) with this function,
+	// so let's read the input file ourselves and execute as
+	// a string command instead.
+	//ret := C.PyRun_SimpleFileExFlags(cfile, cfilename, 1, nil)
+
+
+	C.fseek(cfile , 0 , C.SEEK_END);
+	lSize := C.ftell(cfile);
+	C.rewind(cfile);
+
+	cbuffer := C.CString(strings.Repeat("0", int(lSize)))
+	if cbuffer == nil {
+		return 1, errors.New("memory alloc fails")
+	};
+	defer C.free(unsafe.Pointer(cbuffer))
+
+	if 1!=C.fread( unsafe.Pointer(cbuffer) , C.ulonglong(lSize), 1 , cfile) {
+		return 1, errors.New("entire read fails")
+	}
+
+	ret := C.PyRun_SimpleStringFlags(cbuffer, nil)
+
+	return int(ret), nil
 }
 
 //PyRun_SimpleString : https://docs.python.org/3/c-api/veryhigh.html?highlight=pycompilerflags#c.PyRun_SimpleString

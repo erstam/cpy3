@@ -59,5 +59,6 @@ func PyFloat_GetMin() float64 {
 
 //PyFloat_ClearFreeList : https://docs.python.org/3/c-api/float.html#c.PyFloat_ClearFreeList
 func PyFloat_ClearFreeList() int {
-	return int(C.PyFloat_ClearFreeList())
+	// PyFloat_ClearFreeList removed in Python 3.9, use PyGC_Collect instead.
+	return int(C.PyGC_Collect())
 }

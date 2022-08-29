@@ -138,5 +138,6 @@ func PyDict_Next(p *PyObject, ppos *int, pkey, pvalue **PyObject) bool {
 
 //PyDict_ClearFreeList : https://docs.python.org/3/c-api/dict.html#c.PyDict_ClearFreeList
 func PyDict_ClearFreeList() int {
-	return int(C.PyDict_ClearFreeList())
+	// PyDict_ClearFreeList removed in Python 3.9, use PyGC_Collect instead.
+	return int(C.PyGC_Collect())
 }

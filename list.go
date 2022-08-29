@@ -84,5 +84,6 @@ func PyList_AsTuple(list *PyObject) *PyObject {
 
 //PyList_ClearFreeList : https://docs.python.org/3/c-api/list.html#c.PyList_ClearFreeList
 func PyList_ClearFreeList() int {
-	return int(C.PyList_ClearFreeList())
+	// PyList_ClearFreeList removed in Python 3.9, use PyGC_Collect instead.
+	return int(C.PyGC_Collect())
 }

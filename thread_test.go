@@ -19,7 +19,7 @@ func TestThreadInitialization(t *testing.T) {
 
 func TestGIL(t *testing.T) {
 	Py_Initialize()
-	PyEval_InitThreads()
+	//PyEval_InitThreads()
 
 	gil := PyGILState_Ensure()
 
@@ -30,7 +30,7 @@ func TestGIL(t *testing.T) {
 
 func TestThreadState(t *testing.T) {
 	Py_Initialize()
-	PyEval_InitThreads()
+	//PyEval_InitThreads()
 
 	threadState := PyGILState_GetThisThreadState()
 
@@ -45,7 +45,7 @@ func TestThreadState(t *testing.T) {
 
 func TestThreadSaveRestore(t *testing.T) {
 	Py_Initialize()
-	PyEval_InitThreads()
+	//PyEval_InitThreads()
 
 	threadState := PyEval_SaveThread()
 
